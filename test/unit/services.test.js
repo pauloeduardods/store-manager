@@ -84,26 +84,76 @@ describe('Services unit tests', () => {
       expect(await Products.create('Coca Cola', 'a')).to.deep.equal(expectResult);
       sinon.assert.notCalled(ProductsModel.create);
     });
-    it('Should return "Internal server error" if mysql query fails in create', async () => {
-      const expectResult = {
-        errCode: 500,
-        message: 'Internal server error',
-      };
-      sinon.stub(ProductsModel, 'create').rejects();
-      sinon.stub(ProductsModel, 'getByName').resolves([]);
-      expect(await Products.create('Coca Cola', 10)).to.deep.equal(expectResult);
-      sinon.assert.calledOnce(ProductsModel.create);
+    // it('Should return "Internal server error" if mysql query fails in create', async () => {
+    //   const expectResult = {
+    //     errCode: 500,
+    //     message: 'Internal server error',
+    //   };
+    //   sinon.stub(ProductsModel, 'create').rejects();
+    //   sinon.stub(ProductsModel, 'getByName').resolves([]);
+    //   expect(await Products.create('Coca Cola', 10)).to.deep.equal(expectResult);
+    //   sinon.assert.calledOnce(ProductsModel.create);
+    // });
+    // it('Should return "Internal server error" if mysql query fails in getByName', async () => {
+    //   const expectResult = {
+    //     errCode: 500,
+    //     message: 'Internal server error',
+    //   };
+    //   sinon.stub(ProductsModel, 'create').resolves([]);
+    //   sinon.stub(ProductsModel, 'getByName').rejects([]);
+    //   expect(await Products.create('Coca Cola', 10)).to.deep.equal(expectResult);
+    //   sinon.assert.notCalled(ProductsModel.create);
+    //   sinon.assert.calledOnce(ProductsModel.getByName);
+    // });
+  });
+
+  describe('Products.getAll', () => {
+    it('Should return all products if exists', async () => {
+      const expectResult = [
+        {
+          id: 1,
+          name: 'Coca Cola',
+          quantity: 10,
+        },
+        {
+          id: 2,
+          name: 'Fanta',
+          quantity: 10,
+        },
+      ];
+      sinon.stub(ProductsModel, 'getAll').resolves(expectResult);
+      expect(await Products.getAll()).to.deep.equal(expectResult);
+      sinon.assert.calledOnce(ProductsModel.getAll);
     });
-    it('Should return "Internal server error" if mysql query fails in getByName', async () => {
+    it('Should return empty array if no products', async () => {
+      const expectResult = [];
+      sinon.stub(ProductsModel, 'getAll').resolves([]);
+      expect(await Products.getAll()).to.deep.equal(expectResult);
+      sinon.assert.calledOnce(ProductsModel.getAll);
+    });
+  });
+
+  describe('Products.getById', () => {
+    it('Should return just one element if exists', async () => {
+      const expectResult = [
+        {
+          id: 1,
+          name: 'Coca Cola',
+          quantity: 10,
+        },
+      ];
+      sinon.stub(ProductsModel, 'getById').resolves(expectResult);
+      expect(await Products.getById(1)).to.deep.equal(expectResult);
+      sinon.assert.calledOnce(ProductsModel.getById);
+    });
+    it('Should return "Product not found"', async () => {
       const expectResult = {
-        errCode: 500,
-        message: 'Internal server error',
+        errCode: 404,
+        message: 'Product not found',
       };
-      sinon.stub(ProductsModel, 'create').resolves([]);
-      sinon.stub(ProductsModel, 'getByName').rejects([]);
-      expect(await Products.create('Coca Cola', 10)).to.deep.equal(expectResult);
-      sinon.assert.notCalled(ProductsModel.create);
-      sinon.assert.calledOnce(ProductsModel.getByName);
+      sinon.stub(ProductsModel, 'getById').resolves([]);
+      expect(await Products.getById(1)).to.deep.equal(expectResult);
+      sinon.assert.calledOnce(ProductsModel.getById);
     });
   });
 });

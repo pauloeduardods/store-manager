@@ -16,7 +16,11 @@ app.get('/', (_request, response) => {
   response.send();
 });
 
+app.get('/products', Products.getAll);
+
 app.post('/products', Products.create);
+
+app.get('/products/:id', Products.getById);
 
 app.use(errorMiddleware);
 

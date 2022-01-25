@@ -12,19 +12,6 @@ describe('Models unit tests', () => {
     sinon.restore();
   });
 
-  describe('Products.getAll()', () => {
-    it('Should return the correct products in database', async () => {
-      sinon.stub(conn, 'execute').resolves(mysqlMock.getAllMock);
-      expect(await Products.getAll()).to.deep.equal(mysqlMock.getAllMock[0]);
-      sinon.assert.calledWith(conn.execute, 'SELECT * FROM products');
-    });
-    it('Should return empty array if database is empty', async () => {
-      sinon.stub(conn, 'execute').resolves([[]]);
-      expect(await Products.getAll()).to.deep.equal([]);
-      sinon.assert.calledWith(conn.execute, 'SELECT * FROM products');
-    });
-  });
-
   describe('Products.create()', () => {
     it('Should return the correct id of the inserted product', async () => {
       sinon.stub(conn, 'execute').resolves(mysqlMock.createMock);
@@ -48,6 +35,32 @@ describe('Models unit tests', () => {
       sinon.stub(conn, 'execute').resolves([[],{}]);
       expect(await Products.getByName('Coca Cola')).to.deep.equal([]);
       sinon.assert.calledWith(conn.execute, 'SELECT * FROM products WHERE name = ?', ['Coca Cola']);
+    });
+  });
+
+  describe('Products.getAll()', () => {
+    it('Should return the correct products in database', async () => {
+      sinon.stub(conn, 'execute').resolves(mysqlMock.getAllMock);
+      expect(await Products.getAll()).to.deep.equal(mysqlMock.getAllMock[0]);
+      sinon.assert.calledWith(conn.execute, 'SELECT * FROM products');
+    });
+    it('Should return empty array if database is empty', async () => {
+      sinon.stub(conn, 'execute').resolves([[]]);
+      expect(await Products.getAll()).to.deep.equal([]);
+      sinon.assert.calledWith(conn.execute, 'SELECT * FROM products');
+    });
+  });
+
+  describe('Products.getById()', () => {
+    it('Should return the correct product with some id', async () => {
+      sinon.stub(conn, 'execute').resolves(mysqlMock.getByIdMock);
+      expect(await Products.getById(1)).to.deep.equal(mysqlMock.getByIdMock[0][0]);
+      sinon.assert.calledWith(conn.execute, 'SELECT * FROM products WHERE id = ?', [1]);
+    });
+    it('Should return empty array if product does not exist', async () => {
+      sinon.stub(conn, 'execute').resolves([[],{}]);
+      expect(await Products.getById(1)).to.deep.equal(false);
+      sinon.assert.calledWith(conn.execute, 'SELECT * FROM products WHERE id = ?', [1]);
     });
   });
 });

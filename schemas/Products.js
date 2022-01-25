@@ -34,7 +34,15 @@ const quantityValidation = (quantity) => {
   }
 };
 
+const thereIsAProduct = (products) => {
+  switch (true) {
+    case !products || products.length <= 0: return { errCode: 404, message: 'Product not found' };
+    default: return true;
+  }
+};
+
 module.exports = {
   nameValidation,
   quantityValidation,
+  thereIsAProduct,
 };

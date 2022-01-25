@@ -32,8 +32,19 @@ const getByNameMock =
   ],
 ];
 
+const getByIdMock =
+[
+  [
+    { id: 1, name: 'Coca Cola', quantity: 10 },
+  ],
+  [
+    {}
+  ],
+]
+
 module.exports = {
   getAllMock,
   createMock,
-  getByNameMock
+  getByNameMock,
+  getByIdMock
 }

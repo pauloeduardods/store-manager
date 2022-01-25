@@ -2,23 +2,35 @@ const ProductsModel = require('../models/Products');
 const ProductsSchema = require('../schemas/Products');
 
 async function create(name, quantity) {
-  try {
-    const searchName = await ProductsModel.getByName(name);
-    const nameValidation = ProductsSchema.nameValidation(name, searchName);
-    if (nameValidation.errCode) {
-      return nameValidation;
-    }
-    const quantityValidation = ProductsSchema.quantityValidation(quantity);
-    if (quantityValidation.errCode) {
-      return quantityValidation;
-    }
-    const id = await ProductsModel.create(name, quantity);
-    return { id, name, quantity };
-  } catch (err) {
-    return { errCode: 500, message: 'Internal server error' };
+  const searchName = await ProductsModel.getByName(name);
+  const nameValidation = ProductsSchema.nameValidation(name, searchName);
+  if (nameValidation.errCode) {
+    return nameValidation;
   }
+  const quantityValidation = ProductsSchema.quantityValidation(quantity);
+  if (quantityValidation.errCode) {
+    return quantityValidation;
+  }
+  const id = await ProductsModel.create(name, quantity);
+  return { id, name, quantity };
+}
+
+async function getAll() {
+  const products = await ProductsModel.getAll();
+  return products;
+}
+
+async function getById(id) {
+  const product = await ProductsModel.getById(Number(id));
+  const validation = ProductsSchema.thereIsAProduct(product);
+  if (validation.errCode) {
+    return validation;
+  }
+  return product;
 }
 
 module.exports = {
   create,
+  getAll,
+  getById,
 };
