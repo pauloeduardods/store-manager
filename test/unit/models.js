@@ -6,6 +6,7 @@ const mysqlMock = require('../mocks/mysqlProducts');
 const conn = require('../../models/connection');
 
 const Products = require('../../models/Products');
+const Sales = require('../../models/Sales');
 
 describe('Models unit tests', () => {
   afterEach(() => {
@@ -112,4 +113,33 @@ describe('Models unit tests', () => {
       });
     });
   });
+
+  describe('Sales', () => {
+    describe('create', () => {
+      it('Should insert correctly in DB', async () => {
+        const body = [
+          {
+            "productId": 1,
+            "quantity": 2
+          },
+          {
+            "productId": 2,
+            "quantity": 5
+          }
+        ];
+        sinon.stub(conn, 'execute').resolves(mysqlMock.createMock);
+        expect(await Sales.create(body)).to.be.equal(mysqlMock.createMock[0].insertId);
+      });
+      it('Should return false if id, productId or quantity is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Sales.create([{ "productId": 1 }])).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+        expect(await Sales.create([{ "quantity": 2 }])).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+        expect(await Sales.create([])).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+      });
+    });
+  });
+  
 });

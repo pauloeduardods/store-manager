@@ -1,16 +1,15 @@
-const blankName = (name) => !name || String(name).length === 0;
+const {
+  blankString,
+  blankQuantity,
+  isInvalidNameLength,
+  nameAlreadyExists,
+  isValidQuantity,
 
-const isInvalidNameLength = (name) => name.length < 5;
-
-const nameAlreadyExists = (name, query) => query.some((product) => product.name === name);
-
-const blankQuantity = (quantity) => !quantity && quantity !== 0;
-
-const isValidQuantity = (quantity) => quantity < 1 || typeof quantity !== 'number';
+} = require('./Validators');
 
 const nameValidation = (name, searchName) => {
   switch (true) {
-    case blankName(name): return { errCode: 400, message: '"name" is required' };
+    case blankString(name): return { errCode: 400, message: '"name" is required' };
     case isInvalidNameLength(name): return {
       errCode: 422,
       message: '"name" length must be at least 5 characters long',

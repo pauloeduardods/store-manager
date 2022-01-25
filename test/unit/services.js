@@ -3,6 +3,8 @@ const sinon = require('sinon');
 
 const ProductsModel = require('../../models/Products');
 const Products = require('../../services/Products');
+const SalesModel = require('../../models/Sales');
+const Sales = require('../../services/Sales');
 
 
 describe('Services unit tests', () => {
@@ -260,6 +262,112 @@ describe('Services unit tests', () => {
         sinon.stub(ProductsModel, 'deleteById').resolves(false);
         expect(await Products.deleteById(1)).to.deep.equal(expectResult);
         expect(await Products.deleteById(2)).to.deep.equal(expectResult);
+      });
+    });
+  });
+  
+  describe('Sales', () => {
+    describe('create', () => {
+      it('Should return the correct object if created', async () => {
+        sinon.stub(SalesModel, 'create').resolves(10);
+        const expectResult = {
+          "id": 10,
+          "itemsSold": [
+            {
+              "product_id": 1,
+              "quantity": 2
+            },
+            {
+              "product_id": 2,
+              "quantity": 5
+            }
+          ]
+        };
+        expect(await Sales.create(expectResult.itemsSold)).to.deep.equal(expectResult); 
+      });
+      it('Should return ""product_id" is required" if product_id is missing', async () => {
+        sinon.stub(SalesModel, 'create').resolves(1);
+        const expectResult = {
+          errCode: 400,
+          message: '"product_id" is required',
+        };
+        const itemsSold = [
+          {
+            "quantity": 2
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
+      });
+      it('Should return ""quantity" is required" if quantity is missing', async () => {
+        sinon.stub(SalesModel, 'create').resolves(10);
+        const expectResult = {
+          errCode: 400,
+          message: '"quantity" is required',
+        };
+        const itemsSold = [
+          {
+            "product_id": 1,
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
+      });
+      it('Should return ""quantity" must be a number larger than or equal to 1"', async () => {
+        sinon.stub(SalesModel, 'create').resolves(10);
+        const expectResult = {
+          errCode: 422,
+          message: '"quantity" must be a number larger than or equal to 1',
+        };
+        const itemsSold = [
+          {
+            "product_id": 1,
+            "quantity": 0
+          },
+          {
+            "product_id": 2,
+            "quantity": -1,
+          },
+          {
+            "product_id": 3,
+            "quantity": 'a',
+          },
+          {
+            "product_id": 3,
+            "quantity": 2,
+          }
+        ];
+        expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[1]])).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[2]])).to.deep.equal(expectResult);
+      });
+      it('Should return "Dont find any product with this "product_id""', async () => {
+        sinon.stub(SalesModel, 'create').resolves(false);
+        const expectResult = {
+          errCode: 404,
+          message: 'Dont find any product with this "product_id"',
+        };
+        const itemsSold = [
+          {
+            "product_id": 1,
+            "quantity": 2
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
       });
     });
   });
