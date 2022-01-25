@@ -84,27 +84,6 @@ describe('Services unit tests', () => {
       expect(await Products.create('Coca Cola', 'a')).to.deep.equal(expectResult);
       sinon.assert.notCalled(ProductsModel.create);
     });
-    // it('Should return "Internal server error" if mysql query fails in create', async () => {
-    //   const expectResult = {
-    //     errCode: 500,
-    //     message: 'Internal server error',
-    //   };
-    //   sinon.stub(ProductsModel, 'create').rejects();
-    //   sinon.stub(ProductsModel, 'getByName').resolves([]);
-    //   expect(await Products.create('Coca Cola', 10)).to.deep.equal(expectResult);
-    //   sinon.assert.calledOnce(ProductsModel.create);
-    // });
-    // it('Should return "Internal server error" if mysql query fails in getByName', async () => {
-    //   const expectResult = {
-    //     errCode: 500,
-    //     message: 'Internal server error',
-    //   };
-    //   sinon.stub(ProductsModel, 'create').resolves([]);
-    //   sinon.stub(ProductsModel, 'getByName').rejects([]);
-    //   expect(await Products.create('Coca Cola', 10)).to.deep.equal(expectResult);
-    //   sinon.assert.notCalled(ProductsModel.create);
-    //   sinon.assert.calledOnce(ProductsModel.getByName);
-    // });
   });
 
   describe('Products.getAll', () => {

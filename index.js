@@ -7,11 +7,15 @@ const { errorMiddleware } = require('./middlewares/errorMiddleware');
 
 require('dotenv').config();
 
-const app = express();
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '/';
+
+const server = express();
+
+const app = express.Router();
 
 app.use(bodyParser.json());
 
-// não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
   response.send();
 });
@@ -24,6 +28,8 @@ app.get('/products/:id', Products.getById);
 
 app.use(errorMiddleware);
 
-app.listen(process.env.PORT, () => {
+server.use(HOST, app);
+
+server.listen(PORT, () => {
   console.log(`Escutando na porta ${process.env.PORT}`);
 });

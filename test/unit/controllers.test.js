@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 
+const ProductsModel = require('../../models/Products');
 const ProductsService = require('../../services/Products');
 const Products = require('../../controllers/Products');
 
@@ -39,6 +40,12 @@ describe('Controllers unit tests', () => {
       expect(next.calledWith({ message: 'error', errCode: 400 })).to.be.true;
       sinon.assert.calledOnce(next);
     });
+    it('Should return call next if query fails', async () => {
+      sinon.stub(ProductsModel, 'create').rejects([]);
+      request.body = { name: 'produto', quantity: 10 };
+      await Products.create(request, response, next);
+      sinon.assert.calledOnce(next);
+    });
   });
 
   describe('Products.getAll', () => {
@@ -55,6 +62,12 @@ describe('Controllers unit tests', () => {
       expect(response.status.calledWith(200)).to.be.true;
       expect(response.send.calledWith([])).to.be.true;
       sinon.assert.notCalled(next);
+    });
+    it('Should return call next if query fails', async () => {
+      sinon.stub(ProductsModel, 'getAll').rejects([]);
+      request.body = { name: 'produto', quantity: 10 };
+      await Products.create(request, response, next);
+      sinon.assert.calledOnce(next);
     });
   });
 
@@ -73,6 +86,12 @@ describe('Controllers unit tests', () => {
       await Products.getById(request, response, next)
       sinon.assert.calledOnce(next);
       sinon.assert.calledWith(next, { message: 'Product not found', errCode: 404 });
+    });
+    it('Should return call next if query fails', async () => {
+      sinon.stub(ProductsModel, 'getById').rejects([]);
+      request.body = { name: 'produto', quantity: 10 };
+      await Products.create(request, response, next);
+      sinon.assert.calledOnce(next);
     });
   });
 });
