@@ -28,6 +28,8 @@ app.get('/products/:id', Products.getById);
 
 app.put('/products/:id', Products.update);
 
+app.delete('/products/:id', Products.deleteById);
+
 app.use(errorMiddleware);
 
 server.use(HOST, app);

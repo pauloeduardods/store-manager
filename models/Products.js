@@ -34,10 +34,18 @@ async function update(id, name, quantity) {
   return true;
 }
 
+async function deleteById(id) {
+  if (!id) return false;
+  const query = 'DELETE FROM products WHERE id = ?';
+  await conn.execute(query, [Number(id)]);
+  return true;
+}
+
 module.exports = {
   getAll,
   create,
   getByName,
   getById,
   update,
+  deleteById,
 };

@@ -224,5 +224,43 @@ describe('Services unit tests', () => {
       });
     });
     
+    describe('deleteById', () => {
+      it('Should return the object deleted', async () => {
+        const expectResult = {
+          id: 1,
+          name: 'Coca Cola',
+          quantity: 10
+        };
+        sinon.stub(ProductsModel, 'getById').resolves(expectResult);
+        sinon.stub(ProductsModel, 'deleteById').resolves(true);
+        expect(await Products.deleteById(1)).to.deep.equal(expectResult);
+        sinon.assert.calledOnce(ProductsModel.deleteById);
+      });
+      it('Should return object with message "Product not found"', async () => {
+        const expectResult = {
+          errCode: 404,
+          message: 'Product not found',
+        };
+        sinon.stub(ProductsModel, 'getById').resolves(false);
+        sinon.stub(ProductsModel, 'deleteById').resolves(false);
+        expect(await Products.deleteById(1)).to.deep.equal(expectResult);
+        expect(await Products.deleteById(2)).to.deep.equal(expectResult);
+      });
+      it('Should return object with message "Product not found" if query fails', async () => {
+        const geyById = {
+          id: 1,
+          name: 'Coca Cola',
+          quantity: 10
+        };
+        const expectResult = {
+          errCode: 404,
+          message: 'Product not found',
+        };
+        sinon.stub(ProductsModel, 'getById').resolves(geyById);
+        sinon.stub(ProductsModel, 'deleteById').resolves(false);
+        expect(await Products.deleteById(1)).to.deep.equal(expectResult);
+        expect(await Products.deleteById(2)).to.deep.equal(expectResult);
+      });
+    });
   });
 });

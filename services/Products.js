@@ -45,9 +45,18 @@ async function update(id, name, quantity) {
   return { errCode: 404, message: 'Product not found' };
 }
 
+async function deleteById(id) {
+  const currentId = await ProductsModel.getById(Number(id));
+  if (!currentId.id) return { errCode: 404, message: 'Product not found' };
+  const result = await ProductsModel.deleteById(Number(id));
+  if (result) return currentId;
+  return { errCode: 404, message: 'Product not found' };
+}
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
+  deleteById,
 };

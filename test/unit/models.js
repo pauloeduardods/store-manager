@@ -96,5 +96,20 @@ describe('Models unit tests', () => {
         sinon.assert.notCalled(conn.execute);
       });
     });
+    
+    describe('deleteById', () => {
+      it('Should delete correctly', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.deleteMock);
+        expect(await Products.deleteById(1)).to.be.true;
+        sinon.assert.calledWith(conn.execute, 'DELETE FROM products WHERE id = ?', [1]);
+        expect(await Products.deleteById(2)).to.be.true;
+        sinon.assert.calledWith(conn.execute, 'DELETE FROM products WHERE id = ?', [2]);
+      });
+      it('Should return false if id is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Products.deleteById()).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+      });
+    });
   });
 });

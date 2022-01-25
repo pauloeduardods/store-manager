@@ -114,5 +114,24 @@ describe('Controllers unit tests', () => {
         sinon.assert.calledTwice(next);
       });
     });
+
+    describe('deleteById', () => {
+      it('Should return 200 with deleted product', async () => {
+        sinon.stub(ProductsService, 'deleteById').resolves({ id: 1, name: 'produto', quantity: 10 });
+        request.params = { id: 1 };
+        await Products.deleteById(request, response, next)
+        expect(response.status.calledWith(200)).to.be.true;
+        expect(response.send.calledWith({ id: 1, name: 'produto', quantity: 10 })).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should call next if error', async () => {
+        sinon.stub(ProductsService, 'deleteById').resolves({ message: 'Product not found', errCode: 404 });
+        request.params = { id: 1 };
+        await Products.deleteById(request, response, next);
+        sinon.assert.calledOnce(next);
+        await Products.deleteById(request, response, next);
+        sinon.assert.calledTwice(next);
+      });
+    });
   });
 });
