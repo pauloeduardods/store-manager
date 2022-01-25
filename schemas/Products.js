@@ -1,4 +1,4 @@
-const blankName = (name) => !name;
+const blankName = (name) => !name || String(name).length === 0;
 
 const isInvalidNameLength = (name) => name.length < 5;
 
@@ -15,6 +15,7 @@ const nameValidation = (name, searchName) => {
       errCode: 422,
       message: '"name" length must be at least 5 characters long',
     };
+    case !searchName: return true;
     case nameAlreadyExists(name, searchName): return {
       errCode: 409,
       message: 'Product already exists',

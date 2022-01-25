@@ -26,6 +26,8 @@ app.post('/products', Products.create);
 
 app.get('/products/:id', Products.getById);
 
+app.put('/products/:id', Products.update);
+
 app.use(errorMiddleware);
 
 server.use(HOST, app);

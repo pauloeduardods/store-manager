@@ -26,9 +26,18 @@ async function getById(id) {
   return res || false;
 }
 
+async function update(id, name, quantity) {
+  if (!id || !name || !quantity) return false;
+  const query = 'UPDATE products SET name = ?, quantity = ? WHERE id = ?';
+  const [res] = await conn.execute(query, [name, quantity, id]);
+  if (res.affectedRows === 0) return false;
+  return true;
+}
+
 module.exports = {
   getAll,
   create,
   getByName,
   getById,
+  update,
 };

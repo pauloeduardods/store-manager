@@ -95,5 +95,24 @@ describe('Controllers unit tests', () => {
         sinon.assert.calledOnce(next);
       });
     });
+
+    describe('update', () => {
+      it('Should return 200 with updated product', async () => {
+        sinon.stub(ProductsService, 'update').resolves({ id: 1, name: 'produto', quantity: 10 });
+        request.params = { id: 1 };
+        await Products.update(request, response, next)
+        expect(response.status.calledWith(200)).to.be.true;
+        expect(response.send.calledWith({ id: 1, name: 'produto', quantity: 10 })).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should call next if error', async () => {
+        sinon.stub(ProductsService, 'update').resolves({ message: 'Product not found', errCode: 404 });
+        request.params = { id: 1 };
+        await Products.update(request, response, next);
+        sinon.assert.calledOnce(next);
+        await Products.update(request, response, next);
+        sinon.assert.calledTwice(next);
+      });
+    });
   });
 });

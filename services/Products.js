@@ -29,8 +29,25 @@ async function getById(id) {
   return product;
 }
 
+async function update(id, name, quantity) {
+  const nameValidation = ProductsSchema.nameValidation(name);
+  if (nameValidation.errCode) {
+    return nameValidation;
+  }
+  const quantityValidation = ProductsSchema.quantityValidation(quantity);
+  if (quantityValidation.errCode) {
+    return quantityValidation;
+  }
+  const result = await ProductsModel.update(Number(id), name, quantity);
+  if (result) {
+    return { id, name, quantity };
+  }
+  return { errCode: 404, message: 'Product not found' };
+}
+
 module.exports = {
   create,
   getAll,
   getById,
+  update,
 };

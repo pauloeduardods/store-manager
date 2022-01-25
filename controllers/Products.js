@@ -25,8 +25,19 @@ const getById = rescue(async (req, res, next) => {
   return res.status(200).send(product);
 });
 
+const update = rescue(async (req, res, next) => {
+  const { id } = req.params;
+  const { name, quantity } = req.body;
+  const product = await Products.update(id, name, quantity);
+  if (product.errCode) {
+    return next(product);
+  }
+  return res.status(200).send(product);
+});
+
 module.exports = {
   create,
   getById,
   getAll,
+  update,
 };

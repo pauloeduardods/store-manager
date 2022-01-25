@@ -136,5 +136,93 @@ describe('Services unit tests', () => {
         sinon.assert.calledOnce(ProductsModel.getById);
       });
     });
+
+    describe('update', () => {
+      it('Should return the object with id when updated correctly', async () => {
+        const expectResult = {
+          id: 1,
+          name: 'Coca Cola',
+          quantity: 10
+        };
+        sinon.stub(ProductsModel, 'update').resolves(true);
+        expect(await Products.update(1, 'Coca Cola', 10)).to.deep.equal(expectResult);
+        sinon.assert.calledWith(ProductsModel.update, 1, 'Coca Cola', 10);
+      });
+      it('Should return object with message: "name" is required" if called without name', async () => {
+        const expectResult = {
+          errCode: 400,
+          message: '"name" is required',
+        }
+        sinon.stub(ProductsModel, 'update').resolves(true);
+        expect(await Products.update(1)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(1, null, 2)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(1, null, 10)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+      });
+      it('Should return object with message ""name" length must be at least 5 characters long"', async () => {
+        const expectResult = {
+          errCode: 422,
+          message: '"name" length must be at least 5 characters long',
+        };
+        sinon.stub(ProductsModel, 'update').resolves(true);
+        expect(await Products.update(1, 'Coca', 10)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(2, 'Coa', 10)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(3, 'C', 10)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+      });
+      it('Should return object with message ""quantity" is required"', async () => {
+        const expectResult = {
+          errCode: 400,
+          message: '"quantity" is required',
+        };
+        sinon.stub(ProductsModel, 'update').resolves(true);
+        expect(await Products.update(1, 'Coca Cola')).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(2, 'Coca Cola', null)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(2, 'Coca Cola')).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+      });
+      it('Should return object with message ""quantity" must be a number larger than or equal to 1"', async () => {
+        const expectResult = {
+          errCode: 422,
+          message: '"quantity" must be a number larger than or equal to 1',
+        };
+        sinon.stub(ProductsModel, 'update').resolves(true);
+        expect(await Products.update(1, 'Coca Cola', 0)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(2, 'Coca Cola', -1)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(3, 'Coca Cola', 'a')).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+      });
+      it('Should return object with message ""quantity" must be a number larger than or equal to 1"', async () => {
+        const expectResult = {
+          errCode: 422,
+          message: '"quantity" must be a number larger than or equal to 1',
+        };
+        sinon.stub(ProductsModel, 'update').resolves(true);
+        expect(await Products.update(1, 'Coca Cola', 0)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(2, 'Coca Cola', -1)).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+        expect(await Products.update(3, 'Coca Cola', 'a')).to.deep.equal(expectResult);
+        sinon.assert.notCalled(ProductsModel.update);
+      });
+      it('Should return object with message "Product not found"', async () => {
+        const expectResult = {
+          errCode: 404,
+          message: 'Product not found',
+        };
+        sinon.stub(ProductsModel, 'update').resolves(false);
+        expect(await Products.update(1, 'Coca Cola', 10)).to.deep.equal(expectResult);
+        expect(await Products.update(2, 'Geloo', 2)).to.deep.equal(expectResult);
+      });
+    });
+    
   });
 });

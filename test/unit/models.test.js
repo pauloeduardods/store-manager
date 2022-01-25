@@ -76,5 +76,25 @@ describe('Models unit tests', () => {
         sinon.assert.notCalled(conn.execute);
       });
     });
+
+    describe('update', () => {
+      it('Should return true when updated', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.updateMock);
+        expect(await Products.update(1, 'Coca Cola', 10)).to.be.true;
+        sinon.assert.calledWith(conn.execute, 'UPDATE products SET name = ?, quantity = ? WHERE id = ?', ['Coca Cola', 10, 1]);
+      });
+      it('Should return false when not updated', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.updateMockFalse);
+        expect(await Products.update(1, 'Coca Cola', 10)).to.be.false;
+        sinon.assert.calledWith(conn.execute, 'UPDATE products SET name = ?, quantity = ? WHERE id = ?', ['Coca Cola', 10, 1]);
+      });
+      it('Should return false if id or name or quantity is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Products.update(1, 'gelo')).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+        expect(await Products.update(1, null, 10)).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+      });
+    });
   });
 });
