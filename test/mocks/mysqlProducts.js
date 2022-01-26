@@ -96,19 +96,19 @@ const deleteMockFalse = [
 const getAllMockSales = [
   [
     {
-      sale_id: 3,
+      saleId: 3,
       product_id: 1,
       quantity: 2,
       date: "2022-01-26T11:41:04.000Z"
     },
     {
-      sale_id: 4,
+      saleId: 4,
       product_id: 1,
       quantity: 2,
       date: "2022-01-26T11:41:23.000Z"
     },
     {
-      sale_id: 4,
+      saleId: 4,
       product_id: 2,
       quantity: 2,
       date: "2022-01-26T11:41:23.000Z"

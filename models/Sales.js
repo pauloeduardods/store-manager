@@ -15,7 +15,7 @@ async function create(sales) {
 
 async function getAll() {
   const query = `
-  SELECT sp.sale_id, sp.product_id, sp.quantity, s.date
+  SELECT sp.sale_id as saleId, sp.product_id, sp.quantity, s.date
   FROM sales_products sp
   JOIN sales s
   ON sp.sale_id = s.id`;
