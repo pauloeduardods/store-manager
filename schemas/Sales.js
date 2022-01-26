@@ -10,17 +10,16 @@ const saleDataNormalize = (sales) => sales.map((sale) => ({
 }));
 
 const saleValidator = (sales) => {
-  const salesNormalized = saleDataNormalize(sales);
   switch (true) {
-    case productIdValidator(salesNormalized): return {
+    case productIdValidator(sales): return {
       errCode: 400,
       message: '"product_id" is required',
     };
-    case quantityValidator(salesNormalized): return {
+    case quantityValidator(sales): return {
       errCode: 400,
       message: '"quantity" is required',
     };
-    case quantityIsValid(salesNormalized): return {
+    case quantityIsValid(sales): return {
       errCode: 422,
       message: '"quantity" must be a number larger than or equal to 1',
     };
@@ -30,4 +29,5 @@ const saleValidator = (sales) => {
 
 module.exports = {
   saleValidator,
+  saleDataNormalize,
 };

@@ -10,7 +10,7 @@ async function create(sales) {
   const ArrayOfPromise = sales.map(async ({ productId, quantity }) =>
     conn.execute(query, [saleId, productId, quantity]));
   await Promise.all(ArrayOfPromise);
-  return saleId || false;
+  return saleId;
 }
 
 module.exports = {

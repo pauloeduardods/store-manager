@@ -5,6 +5,10 @@ const ProductsModel = require('../../models/Products');
 const ProductsService = require('../../services/Products');
 const Products = require('../../controllers/Products');
 
+const Sales = require('../../controllers/Sales');
+const SalesService = require('../../services/Sales');
+const SalesModel = require('../../models/Sales');
+
 describe('Controllers unit tests', () => {
   const response = {};
   const request = {};
@@ -131,6 +135,41 @@ describe('Controllers unit tests', () => {
         sinon.assert.calledOnce(next);
         await Products.deleteById(request, response, next);
         sinon.assert.calledTwice(next);
+      });
+    });
+  });
+
+  describe('Sales', () => {
+    describe('create', () => {
+      it('Should return 201 with created sale', async () => {
+        const result = {
+          id: 1,
+          itemsSold: [
+            {
+              "product_id": 1,
+              "quantity": 10,
+            }
+          ],
+        }
+        sinon.stub(SalesService, 'create').resolves(result);
+        request.body = [ { product_id: 1, quantity: 10 } ];
+        await Sales.create(request, response, next)
+        expect(response.status.calledWith(201)).to.be.true;
+        expect(response.send.calledWith(result)).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should return errors on next', async () => {
+        sinon.stub(SalesService, 'create').resolves({ message: 'error', errCode: 400 });
+        request.body = { product_id: 1, quantity: 10 };
+        await Sales.create(request, response, next);
+        expect(next.calledWith({ message: 'error', errCode: 400 })).to.be.true;
+        sinon.assert.calledOnce(next);
+      });
+      it('Should return call next if query fails', async () => {
+        sinon.stub(SalesModel, 'create').rejects([]);
+        request.body = { product_id: 1, quantity: 10 };
+        await Sales.create(request, response, next);
+        sinon.assert.calledOnce(next);
       });
     });
   });
