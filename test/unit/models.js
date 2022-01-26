@@ -89,7 +89,7 @@ describe('Models unit tests', () => {
         expect(await Products.update(1, 'Coca Cola', 10)).to.be.false;
         sinon.assert.calledWith(conn.execute, 'UPDATE products SET name = ?, quantity = ? WHERE id = ?', ['Coca Cola', 10, 1]);
       });
-      it('Should return false if id or name or quantity is missing', async () => {
+      it('Should return false if id, name or quantity is missing', async () => {
         sinon.stub(conn, 'execute').resolves([[], {}]);
         expect(await Products.update(1, 'gelo')).to.be.false;
         sinon.assert.notCalled(conn.execute);
@@ -164,6 +164,28 @@ describe('Models unit tests', () => {
       it('Should return false if id is missing', async () => {
         sinon.stub(conn, 'execute').resolves([[], {}]);
         expect(await Sales.getById()).to.deep.equal(false);
+        sinon.assert.notCalled(conn.execute);
+      });
+    });
+
+    describe('update', () => {
+      it('Should return true when updated', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.updateMock);
+        expect(await Sales.update(1, [{ productId: 1, quantity: 1}])).to.be.true;
+        expect(await Sales.update(1, [{ productId: 1, quantity: 1 }, { productId: 2, quantity:100 }])).to.be.true;
+      });
+      it('Should return false when not updated', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.updateMockFalse);
+        expect(await Sales.update(1, [{ productId: 1, quantity: 1 }])).to.be.false;
+      });
+      it('Should return false if id or the array of { productId, quantity } is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Sales.update(1, [{ quantity: 1}])).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+        expect(await Sales.update(1, [{ productId: 1 }])).to.be.false;
+        expect(await Sales.update(null, [{ productId: 1, quantity: 1 }])).to.be.false;
+        expect(await Sales.update(1, [])).to.be.false;
+        expect(await Sales.update(1)).to.be.false;
         sinon.assert.notCalled(conn.execute);
       });
     });

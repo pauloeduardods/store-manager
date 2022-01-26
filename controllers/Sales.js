@@ -28,8 +28,22 @@ const getById = rescue(async (req, res, next) => {
   return res.status(200).send(sales);
 });
 
+const update = rescue(async (req, res, next) => {
+  const { id } = req.params;
+  const result = await Sales.update(id, req.body);
+  if (result.errCode) {
+    return next(result);
+  }
+  const { saleId, itemUpdated } = result;
+  return res.status(200).send({
+    saleId,
+    itemUpdated,
+  });
+});
+
 module.exports = {
   create,
   getAll,
   getById,
+  update,
 };

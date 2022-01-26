@@ -35,8 +35,24 @@ async function getById(id) {
   return res;
 }
 
+const saleValidator = (sales) =>
+  (!sales || sales.length === 0 || sales.some((sale) => !sale.productId || !sale.quantity));
+
+async function update(id, sales) {
+  if (!id || saleValidator(sales)) return false;
+  const deleteQuery = 'DELETE FROM sales_products WHERE sale_id = ?';
+  const [res] = await conn.execute(deleteQuery, [id]);
+  if (res.affectedRows === 0) return false;
+  const query = 'INSERT INTO sales_products (sale_id, product_id, quantity) VALUES (?, ?, ?)';
+  const ArrayOfPromise = sales.map(async ({ productId, quantity }) =>
+    conn.execute(query, [id, productId, quantity]));
+  await Promise.all(ArrayOfPromise);
+  return true;
+}
+
 module.exports = {
   create,
   getAll,
   getById,
+  update,
 };

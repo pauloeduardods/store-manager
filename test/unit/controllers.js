@@ -245,5 +245,31 @@ describe('Controllers unit tests', () => {
         sinon.assert.calledOnce(next);
       });
     });
+
+    describe('update', () => {
+      it('Should return 200 with updated sale', async () => {
+        sinon.stub(SalesService, 'update').resolves({ saleId: 1, itemUpdated: [ { product_id: 1, quantity: 10 }] });
+        request.params = { id: 1 };
+        request.body = [ { product_id: 1, quantity: 10 } ];
+        await Sales.update(request, response, next)
+        expect(response.status.calledWith(200)).to.be.true;
+        expect(response.send.calledWith({ saleId: 1, itemUpdated: [{ product_id: 1, quantity: 10 }] })).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should return errors on next', async () => {
+        sinon.stub(SalesService, 'update').resolves({ message: 'error', errCode: 400 });
+        request.params = { id: 1 };
+        request.body = { product_id: 1, quantity: 10 };
+        await Sales.update(request, response, next);
+        sinon.assert.calledOnce(next);
+        sinon.assert.calledWith(next, { message: 'error', errCode: 400 });
+      });
+      it('Should return call next if query fails', async () => {
+        sinon.stub(SalesModel, 'update').rejects([]);
+        request.body = { name: 'produto', quantity: 10 };
+        await Sales.create(request, response, next);
+        sinon.assert.calledOnce(next);
+      });
+    });
   });
 });

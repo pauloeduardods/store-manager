@@ -425,5 +425,75 @@ describe('Services unit tests', () => {
         expect(await Sales.getById(2)).to.deep.equal(expectResult);
       });
     });
+    describe('update', () => {
+      it('Should return the correct object if updated', async () => {
+        const expectResult = {
+          "saleId": 1,
+          "itemUpdated": [
+            {
+              "product_id": 1,
+              "quantity": 6
+            }
+          ]
+        } ;
+        sinon.stub(SalesModel, 'update').resolves(true);
+        expect(await Sales.update(1, [{ product_id: 1, quantity: 6 }])).to.deep.equal(expectResult);
+      });
+      it('Should return ""product_id" is required" if product_id is missing', async () => {
+        const expectResult = {
+          errCode: 400,
+          message: '"product_id" is required',
+        };
+        const itemsSold = [
+          {
+            "quantity": 2
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        sinon.stub(SalesModel, 'update').resolves(expectResult);
+        expect(await Sales.update(1, itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.update(1, [itemsSold[0]])).to.deep.equal(expectResult);
+      });
+      it('Should return ""quantity" is required" if quantity is missing', async () => {
+        const expectResult = {
+          errCode: 400,
+          message: '"quantity" is required',
+        };
+        const itemsSold = [
+          {
+            "product_id": 1,
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        sinon.stub(SalesModel, 'update').resolves(expectResult);
+        expect(await Sales.update(1, itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.update(1, [itemsSold[0]])).to.deep.equal(expectResult);
+      });
+      it('Should return "Sale not found" if model update return false', async () => {
+        const expectResult = {
+          errCode: 404,
+          message: 'Sale not found',
+        };
+        const itemsSold = [
+          {
+            "product_id": 1,
+            "quantity": 2
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        sinon.stub(SalesModel, 'update').resolves(false);
+        expect(await Sales.update(1, itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.update(1, [itemsSold[0]])).to.deep.equal(expectResult);
+      });
+    });
   });
 });

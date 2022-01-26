@@ -31,8 +31,27 @@ async function getById(id) {
   return sales;
 }
 
+async function update(id, sales) {
+  const saleDataNormalize = SalesValidation.saleDataNormalize(sales);
+  const validation = SalesValidation.saleValidator(saleDataNormalize);
+  if (validation.errCode) {
+    return validation;
+  }
+  const result = await Sales.update(id, saleDataNormalize);
+  if (!result) {
+    return { errCode: 404, message: 'Sale not found' };
+  }
+  return {
+    saleId: id,
+    itemUpdated: [
+      ...sales,
+    ],
+  };
+}
+
 module.exports = {
   create,
   getAll,
   getById,
+  update,
 };

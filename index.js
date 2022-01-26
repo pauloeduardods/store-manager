@@ -37,6 +37,8 @@ app.post('/sales', Sales.create);
 
 app.get('/sales/:id', Sales.getById);
 
+app.put('/sales/:id', Sales.update);
+
 app.use(errorMiddleware);
 
 server.use(HOST, app);
