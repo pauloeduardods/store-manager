@@ -140,6 +140,33 @@ describe('Models unit tests', () => {
         sinon.assert.notCalled(conn.execute);
       });
     });
+    
+    describe('getAll', () => {
+      it('Should return the correct sales in database', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.getAllMockSales);
+        expect(await Sales.getAll()).to.deep.equal(mysqlMock.getAllMockSales[0]);
+      });
+      it('Should return empty array if database is empty', async () => {
+        sinon.stub(conn, 'execute').resolves([[]]);
+        expect(await Sales.getAll()).to.deep.equal([]);
+      });
+    });
+
+    describe('getById', () => {
+      it('Should return the correct sale with some id', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.getByIdMockSales);
+        expect(await Sales.getById(1)).to.deep.equal(mysqlMock.getByIdMockSales[0]);
+      });
+      it('Should return empty array if sale does not exist', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Sales.getById(1)).to.deep.equal([]);
+      });
+      it('Should return false if id is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Sales.getById()).to.deep.equal(false);
+        sinon.assert.notCalled(conn.execute);
+      });
+    });
   });
   
 });

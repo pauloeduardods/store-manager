@@ -19,6 +19,20 @@ async function create(sales) {
   };
 }
 
+async function getAll() {
+  return Sales.getAll();
+}
+
+async function getById(id) {
+  const sales = await Sales.getById(id);
+  if (!sales || sales.length === 0) {
+    return { errCode: 404, message: 'Sale not found' };
+  }
+  return sales;
+}
+
 module.exports = {
   create,
+  getAll,
+  getById,
 };

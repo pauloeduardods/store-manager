@@ -172,5 +172,78 @@ describe('Controllers unit tests', () => {
         sinon.assert.calledOnce(next);
       });
     });
+    
+    describe('getAll', () => {
+      it('Should return 200 with correct sales in database', async () => {
+        const expectResult = [
+          {
+            "saleId": 1,
+            "date": "2021-09-09T04:54:29.000Z",
+            "product_id": 1,
+            "quantity": 2
+          },
+          {
+            "saleId": 1,
+            "date": "2021-09-09T04:54:54.000Z",
+            "product_id": 2,
+            "quantity": 2
+          }
+        ];
+        sinon.stub(SalesService, 'getAll').resolves(expectResult);
+        await Sales.getAll(request, response, next);
+        expect(response.status.calledWith(200)).to.be.true;
+        expect(response.send.calledWith(expectResult)).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should return 200 with correct sales in database if dont exists', async () => {
+        sinon.stub(SalesService, 'getAll').resolves([]);
+        await Sales.getAll(request, response, next);
+        expect(response.status.calledWith(200)).to.be.true;
+        expect(response.send.calledWith([])).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should return call next if query fails', async () => {
+        sinon.stub(SalesModel, 'getAll').rejects([]);
+        request.body = { name: 'produto', quantity: 10 };
+        await Sales.create(request, response, next);
+        sinon.assert.calledOnce(next);
+      });
+    });
+
+    describe('getById', () => {
+      it('Should return 200 with correct sale in database', async () => {
+        const expectResult = [
+          {
+            product_id: 1,
+            quantity: 2,
+            date: "2022-01-26T11:41:04.000Z"
+          },
+          {
+            product_id: 1,
+            quantity: 2,
+            date: "2022-01-26T11:41:04.000Z"
+          }
+        ];
+        sinon.stub(SalesService, 'getById').resolves(expectResult);
+        request.params = { id: 1 };
+        await Sales.getById(request, response, next)
+        expect(response.status.calledWith(200)).to.be.true;
+        expect(response.send.calledWith(expectResult)).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should return 404 if sale dont exists', async () => {
+        sinon.stub(SalesService, 'getById').resolves({ message: 'Sale not found', errCode: 404 });
+        request.params = { id: 1 };
+        await Sales.getById(request, response, next)
+        sinon.assert.calledOnce(next);
+        sinon.assert.calledWith(next, { message: 'Sale not found', errCode: 404 });
+      });
+      it('Should return call next if query fails', async () => {
+        sinon.stub(SalesModel, 'getById').rejects([]);
+        request.body = { name: 'produto', quantity: 10 };
+        await Sales.create(request, response, next);
+        sinon.assert.calledOnce(next);
+      });
+    });
   });
 });

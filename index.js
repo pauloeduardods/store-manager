@@ -31,7 +31,11 @@ app.put('/products/:id', Products.update);
 
 app.delete('/products/:id', Products.deleteById);
 
+app.get('/sales', Sales.getAll);
+
 app.post('/sales', Sales.create);
+
+app.get('/sales/:id', Sales.getById);
 
 app.use(errorMiddleware);
 

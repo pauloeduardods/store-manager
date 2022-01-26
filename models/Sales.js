@@ -13,6 +13,30 @@ async function create(sales) {
   return saleId;
 }
 
+async function getAll() {
+  const query = `
+  SELECT sp.sale_id, sp.product_id, sp.quantity, s.date
+  FROM sales_products sp
+  JOIN sales s
+  ON sp.sale_id = s.id`;
+  const [res] = await conn.execute(query);
+  return res;
+}
+
+async function getById(id) {
+  if (!id) return false;
+  const query = `
+  SELECT sp.product_id, sp.quantity, s.date
+  FROM sales_products sp
+  JOIN sales s
+  ON sp.sale_id = s.id
+  WHERE sp.sale_id = ?`;
+  const [res] = await conn.execute(query, [id]);
+  return res;
+}
+
 module.exports = {
   create,
+  getAll,
+  getById,
 };
