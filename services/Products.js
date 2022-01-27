@@ -1,5 +1,6 @@
 const ProductsModel = require('../models/Products');
 const ProductsSchema = require('../schemas/Products');
+const Validators = require('../schemas/Validators');
 
 async function create(name, quantity) {
   const searchName = await ProductsModel.getByName(name);
@@ -53,10 +54,20 @@ async function deleteById(id) {
   return { errCode: 404, message: 'Product not found' };
 }
 
+async function updateQuantity(products, type = 'create') {
+  if (type === 'delete' && Validators.deleteQuantityValidator(products)) return false;
+  if (type === 'create' && Validators.productQuantityValidator(products)) return false;
+  const arrayOfPromise = products.map(async (product) =>
+    ProductsModel.updateQuantity(product.productId, product.quantity));
+  await Promise.all(arrayOfPromise);
+  return true;
+}
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
   deleteById,
+  updateQuantity,
 };

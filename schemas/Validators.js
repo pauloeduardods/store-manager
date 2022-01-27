@@ -14,6 +14,15 @@ const quantityValidator = (sales) => sales.some(({ quantity }) => blankQuantity(
 
 const quantityIsValid = (sales) => sales.some((sale) => isValidQuantity(sale.quantity));
 
+const productQuantityValidator = (products) =>
+  !products || products.length === 0
+  || products.some((product) =>
+    product.quantity < 0 || typeof product.quantity !== 'number');
+
+const deleteQuantityValidator = (products) =>
+  !products || products.length === 0
+  || products.some((product) => typeof product.quantity !== 'number');
+
 module.exports = {
   blankString,
   blankQuantity,
@@ -23,4 +32,6 @@ module.exports = {
   productIdValidator,
   quantityIsValid,
   quantityValidator,
+  productQuantityValidator,
+  deleteQuantityValidator,
 };

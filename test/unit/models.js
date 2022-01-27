@@ -112,6 +112,40 @@ describe('Models unit tests', () => {
         sinon.assert.notCalled(conn.execute);
       });
     });
+
+    describe('getQuantity', () => {
+      it('Should return the correct amount of products avaliable', async() => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.getQuantityMock);
+        expect(await Products.getQuantity(1)).to.equal(mysqlMock.getQuantityMock[0][0].quantity);
+      });
+      it('Should return false if id is missing', async() => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Products.getQuantity()).to.equal(false);
+      });
+      it('Should return false if dont find any product', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Products.getQuantity(1)).to.equal(false);
+      });
+    });
+
+    describe('updateQuantity', () => {
+      it('Should return true when updated', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.updateQuantityMock);
+        expect(await Products.updateQuantity(1, 10)).to.be.true;
+        sinon.assert.calledOnce(conn.execute);
+      });
+      it('Should return false if quantity of id is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Products.updateQuantity(1)).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+        expect(await Products.updateQuantity(null, 1)).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+      });
+      it('Should return false if quantity or productId is missing', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.updateQuantityMockFalse);
+        expect(await Products.updateQuantity(1, 10)).to.be.false;
+      });
+    });
   });
 
   describe('Sales', () => {

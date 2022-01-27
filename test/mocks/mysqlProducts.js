@@ -131,6 +131,37 @@ const getByIdMockSales = [
   ]
 ]
 
+const getQuantityMock = [
+  [
+    { quantity: 2 }
+  ]
+]
+
+const updateQuantityMock = [
+  {
+    fieldCount: 0,
+    affectedRows: 1,
+    insertId: 0,
+    info: 'Rows matched: 1  Changed: 0  Warnings: 0',
+    serverStatus: 2,
+    warningStatus: 0,
+    changedRows: 0
+  },
+  undefined
+]
+
+const updateQuantityMockFalse = [
+  {
+    fieldCount: 0,
+    affectedRows: 0,
+    insertId: 0,
+    info: 'Rows matched: 1  Changed: 0  Warnings: 0',
+    serverStatus: 2,
+    warningStatus: 0,
+    changedRows: 0
+  },
+  undefined
+]
 
 module.exports = {
   getAllMock,
@@ -143,4 +174,7 @@ module.exports = {
   deleteMockFalse,
   getAllMockSales,
   getByIdMockSales,
+  getQuantityMock,
+  updateQuantityMock,
+  updateQuantityMockFalse,
 }

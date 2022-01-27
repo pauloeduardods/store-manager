@@ -41,6 +41,22 @@ async function deleteById(id) {
   return true;
 }
 
+async function getQuantity(id) {
+  if (!id) return false;
+  const query = 'SELECT quantity FROM products WHERE id = ?';
+  const [[res]] = await conn.execute(query, [id]);
+  if (!res || !res.quantity) return false;
+  return res.quantity;
+}
+
+async function updateQuantity(id, quantity) {
+  if (typeof id !== 'number' || typeof quantity !== 'number') return false;
+  const query = 'UPDATE products SET quantity = ? WHERE id = ?';
+  const [res] = await conn.execute(query, [quantity, id]);
+  if (res.affectedRows === 0) return false;
+  return true;
+}
+
 module.exports = {
   getAll,
   create,
@@ -48,4 +64,6 @@ module.exports = {
   getById,
   update,
   deleteById,
+  getQuantity,
+  updateQuantity,
 };
