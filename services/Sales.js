@@ -8,8 +8,7 @@ const ProductsModel = require('../models/Products');
 async function createUpdateQuantity(sales) {
   const total = await Promise.all(sales.map(async (sale) => ({
     productId: sale.product_id || sale.productId,
-    quantity: (await ProductsModel.getQuantity(sale.productId
-      || sale.product_id) - sale.quantity),
+    quantity: (await ProductsModel.getQuantity(sale.productId) - sale.quantity),
   })));
   return Validators.productQuantityValidator(total)
     ? { errCode: 422, message: 'Such amount is not permitted to sell' }
@@ -19,7 +18,7 @@ async function createUpdateQuantity(sales) {
 async function deleteUpdateQuantity(sales) {
   const total = await Promise.all(sales.map(async (sale) => ({
     productId: sale.product_id || sale.productId,
-    quantity: (await ProductsModel.getQuantity(sale.productId || sale.product_id)
+    quantity: (await ProductsModel.getQuantity(sale.productId)
       + sale.quantity),
   })));
   return Validators.deleteQuantityValidator(total)

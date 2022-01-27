@@ -267,55 +267,102 @@ describe('Services unit tests', () => {
     });
 
     describe('updateQuantity', () => {
-      it('Should return true if update correctly', async () => {
+      it('Should return true if update correctly (create)', async () => {
         sinon.stub(ProductsModel, 'updateQuantity').resolves(true);
         expect(await Products.updateQuantity([{ productId: 10, quantity: 1}])).to.be.true;
         sinon.assert.calledOnce(ProductsModel.updateQuantity);
         sinon.assert.calledWith(ProductsModel.updateQuantity, 10, 1);
-        expect(await Products.updateQuantity([{ productId: 10, quantity: 1 }, { productId: 11, quantity: 2 }])).to.be.true;
+        expect(await Products.updateQuantity([{ productId: 10, quantity: 0 }, { productId: 11, quantity: 2 }])).to.be.true;
         sinon.assert.calledThrice(ProductsModel.updateQuantity);
+      });
+      it('Should return true if update correctly (delete)', async () => {
+        sinon.stub(ProductsModel, 'updateQuantity').resolves(true);
+        expect(await Products.updateQuantity([{ productId: 10, quantity: -10 }], 'delete')).to.be.true;
+        sinon.assert.calledOnce(ProductsModel.updateQuantity);
+        sinon.assert.calledWith(ProductsModel.updateQuantity, 10, -10);
+        expect(await Products.updateQuantity([{ productId: 10, quantity: 1 }, { productId: 11, quantity: 2 }], 'delete')).to.be.true;
+        sinon.assert.calledThrice(ProductsModel.updateQuantity);
+      });
+      it('Should return false if validation fails (create)', async () => {
+        sinon.stub(ProductsModel, 'updateQuantity').resolves(true);
+        expect(await Products.updateQuantity([{ productId: 10, quantity: -1 }])).to.be.false;
+        expect(await Products.updateQuantity([{ productId: 10, quantity: -1 }, { productId: 11, quantity: 2 }])).to.be.false;
+        expect(await Products.updateQuantity([{ productId: 10, quantity: 'string' }, { productId: 11, quantity: 2 }])).to.be.false;
+      });
+      it('Should return false if validation fails (delete)', async () => {
+        sinon.stub(ProductsModel, 'updateQuantity').resolves(true);
+        expect(await Products.updateQuantity([{ productId: 10, quantity: -1 }], 'delete')).to.be.true;
+        expect(await Products.updateQuantity([{ productId: 10, quantity: 'string' }, { productId: 11, quantity: 2 }], 'delete')).to.be.false;
       });
     });
   });
   
   describe('Sales', () => {
     describe('create', () => {
-      // it('Should return the correct object if created', async () => {
-      //   sinon.stub(SalesModel, 'create').resolves(10);
-      //   sinon.stub(Sales, 'createUpdateQuantity').resolves({ productId: 10, quantity: 1 });
-      //   const expectResult = {
-      //     "id": 10,
-      //     "itemsSold": [
-      //       {
-      //         "product_id": 1,
-      //         "quantity": 2
-      //       },
-      //       {
-      //         "product_id": 2,
-      //         "quantity": 5
-      //       }
-      //     ]
-      //   };
-      //   expect(await Sales.create(expectResult.itemsSold)).to.deep.equal(expectResult); 
-      // });
-      // it('Should return ""product_id" is required" if product_id is missing', async () => {
-      //   sinon.stub(SalesModel, 'create').resolves(1);
-      //   const expectResult = {
-      //     errCode: 400,
-      //     message: '"product_id" is required',
-      //   };
-      //   const itemsSold = [
-      //     {
-      //       "quantity": 2
-      //     },
-      //     {
-      //       "product_id": 2,
-      //       "quantity": 5
-      //     }
-      //   ];
-      //   expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
-      //   expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
-      // });
+      it('Should return the correct object if created', async () => {
+        sinon.stub(SalesModel, 'create').resolves(10);
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 10 }]]);
+        const expectResult = {
+          "id": 10,
+          "itemsSold": [
+            {
+              "product_id": 1,
+              "quantity": 2
+            },
+            {
+              "product_id": 2,
+              "quantity": 10
+            }
+          ]
+        };
+        const expectResult1 = {
+          "id": 10,
+          "itemsSold": [
+            {
+              "product_id": 1,
+              "quantity": 10
+            },
+            {
+              "product_id": 2,
+              "quantity": 9
+            }
+          ] 
+        }
+        expect(await Sales.create(expectResult.itemsSold)).to.deep.equal(expectResult); 
+        sinon.restore();
+        sinon.stub(SalesModel, 'create').resolves(10);
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 10 }]]);
+        expect(await Sales.create(expectResult1.itemsSold)).to.deep.equal(expectResult1);
+      });
+      it('Should return "Such amount is not permitted to sell"', async () => {
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 190 }]]);
+        const expectResult = {
+          errCode: 422,
+          message: 'Such amount is not permitted to sell'
+        };
+        expect(await Sales.create([{
+          "product_id": 1,
+          "quantity": 191
+        }])).to.deep.equal(expectResult);
+      });
+      it('Should return ""product_id" is required" if product_id is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 190 }]]);
+        const expectResult = {
+          errCode: 400,
+          message: '"product_id" is required',
+        };
+        const itemsSold = [
+          {
+            "quantity": 2
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
+      });
       it('Should return ""quantity" is required" if quantity is missing', async () => {
         sinon.stub(SalesModel, 'create').resolves(10);
         const expectResult = {
@@ -363,25 +410,25 @@ describe('Services unit tests', () => {
         expect(await Sales.create([itemsSold[1]])).to.deep.equal(expectResult);
         expect(await Sales.create([itemsSold[2]])).to.deep.equal(expectResult);
       });
-      // it('Should return "Dont find any product with this "product_id""', async () => {
-      //   sinon.stub(SalesModel, 'create').resolves(false);
-      //   const expectResult = {
-      //     errCode: 404,
-      //     message: 'Dont find any product with this "product_id"',
-      //   };
-      //   const itemsSold = [
-      //     {
-      //       "product_id": 1,
-      //       "quantity": 2
-      //     },
-      //     {
-      //       "product_id": 2,
-      //       "quantity": 5
-      //     }
-      //   ];
-      //   expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
-      //   expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
-      // });
+      it('Should return "Dont find any product with this "product_id""', async () => {
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 190 }]]);
+        const expectResult = {
+          errCode: 404,
+          message: 'Dont find any product with this "product_id"',
+        };
+        const itemsSold = [
+          {
+            "product_id": 1,
+            "quantity": 2
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        expect(await Sales.create(itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.create([itemsSold[0]])).to.deep.equal(expectResult);
+      });
     });
 
     describe('getAll', () => {
@@ -439,19 +486,27 @@ describe('Services unit tests', () => {
       });
     });
     describe('update', () => {
-      // it('Should return the correct object if updated', async () => {
-      //   const expectResult = {
-      //     "saleId": 1,
-      //     "itemUpdated": [
-      //       {
-      //         "product_id": 1,
-      //         "quantity": 6
-      //       }
-      //     ]
-      //   } ;
-      //   sinon.stub(SalesModel, 'update').resolves(true);
-      //   expect(await Sales.update(1, [{ product_id: 1, quantity: 6 }])).to.deep.equal(expectResult);
-      // });
+      it('Should return the correct object if updated', async () => {
+        const expectResult = {
+          "saleId": 1,
+          "itemUpdated": [
+            {
+              "product_id": 1,
+              "quantity": 6
+            }
+          ]
+        };
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 190 }]]);
+        expect(await Sales.update(1, [{ product_id: 1, quantity: 6 }])).to.deep.equal(expectResult);
+      });
+      it('Should return "Such amount is not permitted to sell"', async () => {
+        const expectResult = {
+          "errCode": 422,
+          "message": "Such amount is not permitted to sell"
+        };
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 5 }]]);
+        expect(await Sales.update(1, [{ product_id: 1, quantity: 6 }])).to.deep.equal(expectResult);
+      });
       it('Should return ""product_id" is required" if product_id is missing', async () => {
         const expectResult = {
           errCode: 400,
@@ -488,53 +543,63 @@ describe('Services unit tests', () => {
         expect(await Sales.update(1, itemsSold)).to.deep.equal(expectResult);
         expect(await Sales.update(1, [itemsSold[0]])).to.deep.equal(expectResult);
       });
-      // it('Should return "Sale not found" if model update return false', async () => {
-      //   const expectResult = {
-      //     errCode: 404,
-      //     message: 'Sale not found',
-      //   };
-      //   const itemsSold = [
-      //     {
-      //       "product_id": 1,
-      //       "quantity": 2
-      //     },
-      //     {
-      //       "product_id": 2,
-      //       "quantity": 5
-      //     }
-      //   ];
-      //   sinon.stub(SalesModel, 'update').resolves(false);
-      //   expect(await Sales.update(1, itemsSold)).to.deep.equal(expectResult);
-      //   expect(await Sales.update(1, [itemsSold[0]])).to.deep.equal(expectResult);
-      // });
+      it('Should return "Sale not found" if model update return false', async () => {
+        const expectResult = {
+          errCode: 404,
+          message: 'Sale not found',
+        };
+        const itemsSold = [
+          {
+            "product_id": 1,
+            "quantity": 2
+          },
+          {
+            "product_id": 2,
+            "quantity": 5
+          }
+        ];
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 190 }]]);
+        sinon.stub(SalesModel, 'update').resolves(false);
+        expect(await Sales.update(1, itemsSold)).to.deep.equal(expectResult);
+        expect(await Sales.update(1, [itemsSold[0]])).to.deep.equal(expectResult);
+      });
     });
 
-    // describe('deleteById', () => {
-    //   it('Should return the correct object if deleted', async () => {
-    //     const expectResult = [
-    //       {
-    //         product_id: 1,
-    //         quantity: 2,
-    //         date: "2022-01-26T11:41:04.000Z"
-    //       },
-    //       {
-    //         product_id: 1,
-    //         quantity: 2,
-    //         date: "2022-01-26T11:41:04.000Z"
-    //       }
-    //     ]
-    //     sinon.stub(SalesModel, 'deleteById').resolves(expectResult);
-    //     expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
-    //   });
-      // it('Should return "Sale not found" if model update return false', async () => {
-      //   const expectResult = {
-      //     errCode: 404,
-      //     message: 'Sale not found',
-      //   };
-      //   sinon.stub(SalesModel, 'deleteById').resolves(false);
-      //   expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
-      //   expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
-      // });
-    // });
+    describe('deleteById', () => {
+      it('Should return the correct object if deleted', async () => {
+        const expectResult = [
+          {
+            product_id: 1,
+            quantity: 2,
+            date: "2022-01-26T11:41:04.000Z"
+          },
+          {
+            product_id: 1,
+            quantity: 2,
+            date: "2022-01-26T11:41:04.000Z"
+          }
+        ]
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 190 }]]);
+        sinon.stub(SalesModel, 'deleteById').resolves(expectResult);
+        expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
+      });
+      it('Should return error "Such amount is not permitted to sell"', async () => {
+        const expectResult = { errCode: 422, message: 'Such amount is not permitted to sell' }
+        sinon.stub(conn, 'execute').resolves([[]]);
+        sinon.stub(SalesModel, 'deleteById').resolves(true);
+        sinon.stub(Sales, 'deleteUpdateQuantity').resolves(expectResult);
+        expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
+      });
+      it('Should return "Sale not found" if model update return false', async () => {
+        const expectResult = {
+          errCode: 404,
+          message: 'Sale not found',
+        };
+        sinon.stub(conn, 'execute').resolves([[{ product_id: 1, quantity: 190 }]]);
+        sinon.stub(SalesModel, 'deleteById').resolves(false);
+        expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
+        expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
+      });
+    });
   });
 });
