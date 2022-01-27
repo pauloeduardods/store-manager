@@ -41,9 +41,19 @@ const update = rescue(async (req, res, next) => {
   });
 });
 
+const deleteById = rescue(async (req, res, next) => {
+  const { id } = req.params;
+  const result = await Sales.deleteById(id);
+  if (result.errCode) {
+    return next(result);
+  }
+  return res.status(200).send(result);
+});
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
+  deleteById,
 };

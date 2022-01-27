@@ -124,8 +124,8 @@ const getByIdMockSales = [
       date: "2022-01-26T11:41:04.000Z"
     },
     {
-      product_id: 1,
-      quantity: 2,
+      product_id: 2,
+      quantity: 3,
       date: "2022-01-26T11:41:04.000Z"
     }
   ]

@@ -495,5 +495,33 @@ describe('Services unit tests', () => {
         expect(await Sales.update(1, [itemsSold[0]])).to.deep.equal(expectResult);
       });
     });
+
+    describe('deleteById', () => {
+      it('Should return the correct object if deleted', async () => {
+        const expectResult = [
+          {
+            product_id: 1,
+            quantity: 2,
+            date: "2022-01-26T11:41:04.000Z"
+          },
+          {
+            product_id: 1,
+            quantity: 2,
+            date: "2022-01-26T11:41:04.000Z"
+          }
+        ]
+        sinon.stub(SalesModel, 'deleteById').resolves(expectResult);
+        expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
+      });
+      it('Should return "Sale not found" if model update return false', async () => {
+        const expectResult = {
+          errCode: 404,
+          message: 'Sale not found',
+        };
+        sinon.stub(SalesModel, 'deleteById').resolves(false);
+        expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
+        expect(await Sales.deleteById(1)).to.deep.equal(expectResult);
+      });
+    });
   });
 });

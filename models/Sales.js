@@ -50,9 +50,21 @@ async function update(id, sales) {
   return true;
 }
 
+async function deleteById(id) {
+  if (!id) return false;
+  const sales = await getById(id);
+  if (!sales || sales.length === 0) return false;
+  const deleteSalesProducts = 'DELETE FROM sales_products WHERE sale_id = ?';
+  const deleteSales = 'DELETE FROM sales WHERE id = ?';
+  await conn.execute(deleteSalesProducts, [id]);
+  await conn.execute(deleteSales, [id]);
+  return sales;
+}
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
+  deleteById,
 };

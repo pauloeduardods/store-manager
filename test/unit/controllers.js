@@ -271,5 +271,41 @@ describe('Controllers unit tests', () => {
         sinon.assert.calledOnce(next);
       });
     });
+
+    describe('deleteById', () => {
+      it('Should return 200 with deleted sale', async () => {
+        const result = [
+          {
+            "date": "2021-09-09T04:54:29.000Z",
+            "product_id": 1,
+            "quantity": 2
+          },
+          {
+            "date": "2021-09-09T04:54:54.000Z",
+            "product_id": 2,
+            "quantity": 2
+          }
+        ];
+        sinon.stub(SalesService, 'deleteById').resolves(result);
+        request.params = { id: 1 };
+        await Sales.deleteById(request, response, next)
+        expect(response.status.calledWith(200)).to.be.true;
+        expect(response.send.calledWith(result)).to.be.true;
+        sinon.assert.notCalled(next);
+      });
+      it('Should return errors on next', async () => {
+        sinon.stub(SalesService, 'deleteById').resolves({ message: 'error', errCode: 400 });
+        request.params = { id: 1 };
+        await Sales.deleteById(request, response, next);
+        sinon.assert.calledOnce(next);
+        sinon.assert.calledWith(next, { message: 'error', errCode: 400 });
+      });
+      it('Should return call next if query fails', async () => {
+        sinon.stub(SalesModel, 'deleteById').rejects([]);
+        request.body = { name: 'produto', quantity: 10 };
+        await Sales.create(request, response, next);
+        sinon.assert.calledOnce(next);
+      });
+    });
   });
 });

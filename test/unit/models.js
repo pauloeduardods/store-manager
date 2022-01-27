@@ -189,6 +189,22 @@ describe('Models unit tests', () => {
         sinon.assert.notCalled(conn.execute);
       });
     });
+
+    describe('deleteById', () => {
+      it('Should delete correctly', async () => {
+        sinon.stub(conn, 'execute').resolves(mysqlMock.getByIdMockSales);
+        expect(await Sales.deleteById(1)).be.deep.equal(mysqlMock.getByIdMockSales[0]);
+        expect(await Sales.deleteById(2)).be.deep.equal(mysqlMock.getByIdMockSales[0]);
+      });
+      it('Should return false if id is missing', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Sales.deleteById()).to.be.false;
+        sinon.assert.notCalled(conn.execute);
+      });
+      it('Should return false if dont find any sale with id', async () => {
+        sinon.stub(conn, 'execute').resolves([[], {}]);
+        expect(await Sales.deleteById(1)).to.be.false;
+      });
+    });
   });
-  
 });

@@ -39,6 +39,8 @@ app.get('/sales/:id', Sales.getById);
 
 app.put('/sales/:id', Sales.update);
 
+app.delete('/sales/:id', Sales.deleteById);
+
 app.use(errorMiddleware);
 
 server.use(HOST, app);
