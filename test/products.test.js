@@ -25,9 +25,9 @@ describe("Products", () => {
     });
 
     const importer = new Importer({
-      user: MYSQL_USER,
-      password: MYSQL_PASSWORD,
-      host: MYSQL_HOST,
+      user: String(MYSQL_USER),
+      password: String(MYSQL_PASSWORD),
+      host: String(MYSQL_HOST),
     });
 
     await importer.import("./StoreManager.sql");
