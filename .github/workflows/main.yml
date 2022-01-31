@@ -1,9 +1,6 @@
 name: CI Test App
 'on':
   push: null
-  pull_request:
-    branches:
-      - main
 env:
   MYSQL_USER: test_store_manager
   MYSQL_PASSWORD: test_store_manager
@@ -29,7 +26,7 @@ jobs:
         with:
           node-version: '${{ matrix.node-version }}'
         env:
-          PORT: '3000'
+          PORT: 3000
           HOST: /
           MYSQL_HOST: localhost
       - name: Install dependecies
@@ -37,6 +34,7 @@ jobs:
       - name: Run lint
         run: npm run lint
       - name: Starting App
+        run: echo $PORT
         run: >-
           HOST=$HOST PORT=$PORT MYSQL_USER=$MYSQL_USER
           MYSQL_PASSWORD=$MYSQL_PASSWORD npm start
