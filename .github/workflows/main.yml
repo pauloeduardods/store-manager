@@ -23,17 +23,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '${{ matrix.node-version }}'
-        env:
-          PORT: 3000
-          HOST: /
-          MYSQL_HOST: localhost
       - name: Install dependecies
         run: npm ci
       - name: Run lint
         run: npm run lint
       - name: Starting App
         run: >-
-          HOST=/ MYSQL_HOST=localhost PORT=3000 MYSQL_USER=test_store_manager
+          HOST=/ MYSQL_HOST=mysql PORT=3000 MYSQL_USER=test_store_manager
           MYSQL_PASSWORD=test_store_manager npm start &
       - name: Wait for App to start
         run: sleep 5
