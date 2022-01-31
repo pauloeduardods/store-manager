@@ -17,12 +17,14 @@ jobs:
       MYSQL_PASSWORD: "test_store_manager"
     services:
       mysql:
-        image: mysql:latest
+        image: mysql:5.7
         ports:
-          - "3306:3306"
+          - 3306
         env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_ROOT_PASSWORD: "root"
           MYSQL_DATABASE: "StoreManager"
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
         env:
           PORT: "3000"
