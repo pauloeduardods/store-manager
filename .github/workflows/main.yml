@@ -12,21 +12,22 @@ jobs:
     strategy:
       matrix: 
         node-version: [14.x, 17.x]
-    env:
-      MYSQL_USER: "test_store_manager"
-      MYSQL_PASSWORD: "test_store_manager"
     services:
       mysql:
         image: mysql:5.7
         ports:
           - 3306
         env:
+          MYSQL_USER: "test_store_manager"
+          MYSQL_PASSWORD: "test_store_manager"
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_ROOT_PASSWORD: "root"
           MYSQL_DATABASE: "StoreManager"
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
         env:
+          MYSQL_USER: "test_store_manager"
+          MYSQL_PASSWORD: "test_store_manager"
           PORT: "3000"
           HOST: "/"
           MYSQL_HOST: "localhost"
