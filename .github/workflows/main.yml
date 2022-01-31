@@ -39,5 +39,5 @@ jobs:
         run: sleep 5
       - name: Test
         run: >-
-          HOST=/ PORT=3000 MYSQL_USER=test_store_manager
-          MYSQL_PASSWORD=test_store_manager npm test
+          HOST=/ PORT=3000 MYSQL_USER=root
+          MYSQL_PASSWORD=root npm test
