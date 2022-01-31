@@ -10,8 +10,7 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 14.x
-          - 17.x
+          - 16.x
     services:
       mysql:
         image: 'mysql:5.7'
@@ -20,12 +19,8 @@ jobs:
         env:
           MYSQL_USER: test_store_manager
           MYSQL_PASSWORD: test_store_manager
-          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: StoreManager
-        options: >-
-          --health-cmd="mysqladmin ping" --health-interval=10s
-          --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v2
       - name: 'Test with Node ${{ matrix.node-version }}'
