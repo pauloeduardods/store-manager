@@ -10,7 +10,7 @@ jobs:
           - 16.x
     services:
       mysql:
-        image: mysql:8.0.21
+        image: mysql:latest
         env:
           MYSQL_ROOT_PASSWORD: root_test_pass
           MYSQL_USER: test_store_manager
