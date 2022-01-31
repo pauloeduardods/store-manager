@@ -9,7 +9,8 @@ describe('Sales', () => {
     { name: 'Escudo do Capitão América', quantity: 30 },
   ];
   const HOST = process.env.HOST || '/';
-  const url = `http://localhost:${process.env.PORT}${HOST}`;
+  const PORT = process.env.PORT || '3000';
+  const url = `http://localhost:${PORT}${HOST}`;
   const INVALID_ID = 99999;
   let connection;
 
