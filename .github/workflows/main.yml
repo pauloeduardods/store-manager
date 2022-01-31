@@ -33,8 +33,9 @@ jobs:
         run: npm ci
       - name: Run lint
         run: npm run lint
-      - name: Starting App
+      - name: ports
         run: echo $PORT
+      - name: Starting App
         run: >-
           HOST=$HOST PORT=$PORT MYSQL_USER=$MYSQL_USER
           MYSQL_PASSWORD=$MYSQL_PASSWORD npm start
