@@ -17,6 +17,8 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_USER: test_store_manager
           MYSQL_PASSWORD: test_store_manager
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: 3307
     steps:
       - uses: actions/checkout@v2
       - name: 'Test with Node ${{ matrix.node-version }}'
@@ -29,7 +31,7 @@ jobs:
         run: npm run lint
       - name: Starting App
         run: >-
-          HOST=/ MYSQL_HOST=mysql PORT=3000 MYSQL_USER=test_store_manager
+          HOST=/ MYSQL_HOST=127.0.0.1 PORT=3000 MYSQL_USER=test_store_manager
           MYSQL_PASSWORD=test_store_manager npm start &
       - name: Wait for App to start
         run: sleep 5
