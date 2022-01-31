@@ -1,0 +1,34 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD_STORE_MANAGER}
+      - MYSQL_DATABASE=StoreManager
+      - MYSQL_USER=${MYSQL_USER_STORE_MANAGER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD_STORE_MANAGER}
+    volumes:
+      - ./StoreManager.sql:/docker-entrypoint-initdb.d/StoreManager.sql
+      - /home/$USER/mysql/store_db:/var/lib/mysql
+    networks:
+      - backend_store_manager
+  backend:
+    depends_on:
+      - db
+    build: .
+    restart: unless-stopped
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=${MYSQL_USER_STORE_MANAGER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD_STORE_MANAGER}
+      - HOST=${HOST_STORE_MANAGER}
+    ports:
+      - ${STORE_MANAGER_PORT}:3000
+    links:
+      - db
+    networks:
+      - backend_store_manager
+networks:
+  backend_store_manager:
+    driver: bridge
