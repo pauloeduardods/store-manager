@@ -1,9 +1,6 @@
 name: CI Test App
 'on':
   push: null
-env:
-  MYSQL_USER: test_store_manager
-  MYSQL_PASSWORD: test_store_manager
 jobs:
   app-ci:
     runs-on: ubuntu-latest
@@ -18,7 +15,8 @@ jobs:
           - 3306
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: StoreManager
+          MYSQL_USER: test_store_manager
+          MYSQL_PASSWORD: test_store_manager
     steps:
       - uses: actions/checkout@v2
       - name: 'Test with Node ${{ matrix.node-version }}'
