@@ -3,12 +3,15 @@ const mysql = require('mysql2/promise');
 const Importer = require('mysql-import');
 require('dotenv').config();
 describe('Sales', () => {
+  const HOST = process.env.HOST || '';
+  const PORT = process.env.PORT || '3000';
+  const url = `http://localhost:${PORT}${HOST}`;
+
   const products = [
     { name: 'Martelo de Thor', quantity: 10 },
     { name: 'Traje de encolhimento', quantity: 20 },
     { name: 'Escudo do Capitão América', quantity: 30 },
   ];
-  const url = `http://localhost:${process.env.PORT}`;
   const INVALID_ID = 99999;
   let connection;
 
