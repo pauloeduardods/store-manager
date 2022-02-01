@@ -40,4 +40,4 @@ jobs:
           MYSQL_HOST=127.0.0.1 PORT=3000 MYSQL_USER=root
           MYSQL_PASSWORD=root_test_pass npm test
       - name: Unit Test
-        run: npm test:mocha
+        run: npm run test:mocha
