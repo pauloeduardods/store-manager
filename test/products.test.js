@@ -9,7 +9,7 @@ describe("Products", () => {
     { name: "Traje de encolhimento", quantity: 20 },
     { name: "Escudo do Capitão América", quantity: 30 },
   ];
-  const HOST = process.env.HOST || '/';
+  const HOST = process.env.HOST || '';
   const PORT = process.env.PORT || '3000';
   const url = `http://localhost:${PORT}${HOST}`;
   const INVALID_ID = 99999;
