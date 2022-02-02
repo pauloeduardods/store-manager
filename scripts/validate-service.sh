@@ -1,9 +1,6 @@
 echo "Checking if application is running"
 
-if
-[ "$(docker container inspect -f '{{.State.Status}}' store-manager-api-backend-1)" == "running" ]
-&&
-[ "$(docker container inspect -f '{{.State.Status}}' store-manager-api-db-1)" == "running" ]; then
+if [ "$(docker container inspect -f '{{.State.Status}}' store-manager-api-backend-1)" == "running" ] && [ "$(docker container inspect -f '{{.State.Status}}' store-manager-api-db-1)" == "running" ]; then
   echo "Application is running"
   docker container prune -f
   docker image prune -fa
