@@ -18,7 +18,7 @@ const app = express.Router();
 app.use(bodyParser.json());
 
 app.get('/', (_request, response) => {
-  response.send();
+  response.sendFile('./html/root.html', { root: __dirname });
 });
 
 app.get('/products', Products.getAll);
